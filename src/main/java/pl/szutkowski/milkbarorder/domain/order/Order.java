@@ -49,6 +49,10 @@ public class Order {
         return promotionItem;
     }
 
+    public void assignCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
     public boolean hasProductQuantity(ProductId productId, Quantity quantity) {
         for (OrderItem item : items) {
             if (item.productId().equals(productId)) {
