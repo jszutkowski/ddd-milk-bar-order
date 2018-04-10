@@ -11,4 +11,8 @@ public class Quantity {
     {
         return quantity;
     }
+
+    public boolean isGreaterOrEqual(Quantity quantity) {
+        return this.quantity >= quantity.quantity();
+    }
 }

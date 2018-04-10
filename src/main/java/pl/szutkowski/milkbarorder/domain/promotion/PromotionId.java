@@ -1,4 +1,9 @@
 package pl.szutkowski.milkbarorder.domain.promotion;
 
-public class PromotionId {
+import pl.szutkowski.milkbarorder.domain.ValueObject.EntityId;
+
+public class PromotionId extends EntityId{
+    public PromotionId(String id) {
+        super(id);
+    }
 }

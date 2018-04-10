@@ -11,4 +11,8 @@ public class Price {
     {
         return price;
     }
+
+    public boolean isEqual(Price price) {
+        return this.price == price.price();
+    }
 }
