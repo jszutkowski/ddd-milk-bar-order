@@ -1,8 +1,8 @@
 package pl.szutkowski.milkbarorder.domain.promotion;
 
 public class PromotionType {
-    public static final int TYPE_PRODUCT = 1;
-    public static final int TYPE_DISCOUNT = 2;
+    private static final int TYPE_PRODUCT = 1;
+    private static final int TYPE_DISCOUNT = 2;
 
     private int type;
 
@@ -16,5 +16,9 @@ public class PromotionType {
 
     public boolean isDiscountPromotion() {
         return type == TYPE_DISCOUNT;
+    }
+
+    public int type() {
+        return type;
     }
 }

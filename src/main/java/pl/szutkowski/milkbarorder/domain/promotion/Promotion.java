@@ -15,6 +15,7 @@ public class Promotion {
     private ProductId requiredProductId;
     private CategoryId requiredCategoryId;
     private Quantity requiredQuantity;
+    private CategoryId promotionCategoryId;
     private ProductId promotionProductId;
     private Discount discount;
 
@@ -27,6 +28,7 @@ public class Promotion {
                      ProductId requiredProductId,
                      CategoryId requiredCategoryId,
                      Quantity requiredQuantity,
+                     CategoryId promotionCategoryId,
                      ProductId promotionProductId,
                      Discount discount) {
         this.id = id;
@@ -38,6 +40,7 @@ public class Promotion {
         this.requiredProductId = requiredProductId;
         this.requiredCategoryId = requiredCategoryId;
         this.requiredQuantity = requiredQuantity;
+        this.promotionCategoryId = promotionCategoryId;
         this.promotionProductId = promotionProductId;
         this.discount = discount;
     }
@@ -76,6 +79,10 @@ public class Promotion {
 
     public Quantity requiredQuantity() {
         return requiredQuantity;
+    }
+
+    public CategoryId promotionCategoryId() {
+        return promotionCategoryId;
     }
 
     public ProductId promotionProductId() {
@@ -125,6 +132,6 @@ public class Promotion {
     }
 
     private boolean checkTimeAvailability() {
-        return days.isCurrentDay() && hours.isBetween();
+        return days.hasCurrentDay() && hours.isBetween();
     }
 }
