@@ -7,22 +7,17 @@ import pl.szutkowski.milkbarorder.domain.promotion.*;
 public class AssignPromotionUseCase {
 
     private PromotionAdapter promotionAdapter;
-    private PromotionAvailabilityChecker availabilityChecker;
     private OrderRepository orderRepository;
 
     public AssignPromotionUseCase(PromotionAdapter promotionAdapter,
-                                  PromotionAvailabilityChecker availabilityChecker,
                                   OrderRepository orderRepository) {
-
         this.promotionAdapter = promotionAdapter;
-        this.availabilityChecker = availabilityChecker;
         this.orderRepository = orderRepository;
     }
 
     public void execute(AssignPromotionRequest request) throws PromotionNotFoundException, OrderNotFoundException, PromotionNotAvailableException {
-        Promotion promotion = promotionAdapter.getPromotion(new PromotionId(request.getPromotionId()));
         Order order = orderRepository.findIncompleteOrder(new OrderId(request.getOrderId()));
-
+        Promotion promotion = promotionAdapter.getPromotion(new PromotionId(request.getPromotionId()));
         order.assignPromotion(promotion);
 
         orderRepository.save(order);

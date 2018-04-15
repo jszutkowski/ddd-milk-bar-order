@@ -19,13 +19,21 @@ public class Order {
     private Price totalPrice;
     private Customer customer;
     private List<OrderItem> items;
+    private List<PromotionId> availablePromotions;
     private PromotionItem promotionItem;
 
-    public Order(OrderId id, Price totalPrice, Customer customer, List<OrderItem> items, PromotionItem promotionItem) {
+
+    public Order(OrderId id,
+                 Price totalPrice,
+                 Customer customer,
+                 List<OrderItem> items,
+                 List<PromotionId> availablePromotions,
+                 PromotionItem promotionItem) {
         this.id = id;
         this.totalPrice = totalPrice;
         this.customer = customer;
         this.items = items;
+        this.availablePromotions = availablePromotions;
         this.promotionItem = promotionItem;
     }
 
@@ -47,6 +55,25 @@ public class Order {
 
     public PromotionItem promotion() {
         return promotionItem;
+    }
+
+    public boolean hasPromotion() {
+        return promotionItem != null;
+    }
+
+    public void removeExpiredPromotion() {
+        if (!hasPromotion()) {
+            return;
+        }
+
+        PromotionId currentPromotionId = promotionItem.promotionId();
+        for (PromotionId availablePromotionId : availablePromotions) {
+            if (availablePromotionId.equals(currentPromotionId)) {
+                return;
+            }
+        }
+
+        promotionItem = null;
     }
 
     public void assignCustomer(Customer customer) {
@@ -75,7 +102,7 @@ public class Order {
 
     }
 
-    public void addProduct(OrderItemRepository repository, Product product, Quantity quantity) {
+    public void addProduct(OrderItemId id, Product product, Quantity quantity) {
         for (OrderItem item : items) {
             if (item.productId().equals(product.id())) {
                 item.addQuantity(quantity);
@@ -83,11 +110,11 @@ public class Order {
             }
         }
 
-        OrderItem newItem = new OrderItem(repository.nextId(), product.name(), product.id(), product.categoryId(), product.price(), quantity, this);
+        OrderItem newItem = new OrderItem(id, product.name(), product.id(), product.categoryId(), product.price(), quantity, this);
         this.items.add(newItem);
     }
 
-    public void removeOneProduct(ProductId productId) {
+    public void decrementProductsQuantity(ProductId productId) {
         for (OrderItem item : items) {
             if (item.productId().equals(productId)) {
                 item.decrementQuantity();
@@ -95,6 +122,15 @@ public class Order {
                     items.remove(item);
                 }
                 break;
+            }
+        }
+    }
+
+    public void setAvailablePromotions(List<Promotion> allPromotions) {
+        availablePromotions.clear();
+        for (Promotion promotion : allPromotions) {
+            if (promotion.isAvailable(this)) {
+                availablePromotions.add(promotion.id());
             }
         }
     }
@@ -130,6 +166,9 @@ public class Order {
         return isListChanged;
     }
 
+    /**
+     * @TODO: remove this method
+     */
     public boolean refreshPromotion(List<Promotion> promotions) {
         if (promotionItem == null) {
             return false;
@@ -155,6 +194,9 @@ public class Order {
         return productMap;
     }
 
+    /**
+     * @TODO: remove this method
+     */
     private Promotion getPromotionFromList(PromotionId promotionId, List<Promotion> promotions) {
         for (Promotion promotion : promotions) {
             if (promotion.id().equals(promotionId)) {
