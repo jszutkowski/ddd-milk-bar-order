@@ -3,7 +3,6 @@ package pl.szutkowski.milkbarorder.application.request;
 import lombok.Data;
 
 @Data
-public class RemoveProductRequest {
+public class ConfirmOrderRequest {
     private String orderId;
-    private String productId;
 }

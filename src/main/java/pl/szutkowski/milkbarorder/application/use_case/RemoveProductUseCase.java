@@ -1,26 +1,26 @@
 package pl.szutkowski.milkbarorder.application.use_case;
 
-import pl.szutkowski.milkbarorder.application.request.AddProductRequest;
+import pl.szutkowski.milkbarorder.application.request.RemoveProductRequest;
 import pl.szutkowski.milkbarorder.domain.order.*;
 import pl.szutkowski.milkbarorder.domain.product.ProductId;
-import pl.szutkowski.milkbarorder.domain.promotion.PromotionAdapter;
 
 public class RemoveProductUseCase {
 
     private final OrderRepository orderRepository;
-    private final RemoveProductService removeProductService;
+    private final BasketOrderRefresher orderRefresher;
 
-    public RemoveProductUseCase(OrderRepository orderRepository, RemoveProductService removeProductService) {
+    public RemoveProductUseCase(OrderRepository orderRepository, BasketOrderRefresher orderRefresher) {
 
         this.orderRepository = orderRepository;
-        this.removeProductService = removeProductService;
+        this.orderRefresher = orderRefresher;
     }
 
-    public void execute(AddProductRequest request) throws OrderNotFoundException {
+    public void execute(RemoveProductRequest request) throws OrderNotFoundException {
 
         OrderId orderId = new OrderId(request.getOrderId());
         Order order = orderRepository.findIncompleteOrder(orderId);
-        removeProductService.removeProduct(order, new ProductId(request.getProductId()));
+        order.decrementProductsQuantity(new ProductId(request.getProductId()));
+        orderRefresher.refreshOrder(order);
         orderRepository.save(order);
     }
 }

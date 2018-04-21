@@ -61,6 +61,14 @@ public class Promotion {
         return type;
     }
 
+    public boolean isProductPromotion() {
+        return type.isProductPromotion();
+    }
+
+    public boolean isDiscountPromotion() {
+        return type.isDiscountPromotion();
+    }
+
     public Days days() {
         return days;
     }

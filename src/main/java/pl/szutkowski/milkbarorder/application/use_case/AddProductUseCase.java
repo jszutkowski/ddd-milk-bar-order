@@ -7,32 +7,34 @@ import pl.szutkowski.milkbarorder.domain.product.Product;
 import pl.szutkowski.milkbarorder.domain.product.ProductAdapter;
 import pl.szutkowski.milkbarorder.domain.product.ProductId;
 import pl.szutkowski.milkbarorder.domain.product.ProductNotFoundException;
-import pl.szutkowski.milkbarorder.domain.promotion.PromotionAdapter;
 
 public class AddProductUseCase {
 
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
     private final ProductAdapter productAdapter;
-    private final AddProductService addProductService;
+    private final BasketOrderRefresher orderRefresher;
 
     public AddProductUseCase(OrderRepository orderRepository,
+                             OrderItemRepository orderItemRepository,
                              ProductAdapter productAdapter,
-                             AddProductService addProductService) {
+                             BasketOrderRefresher orderRefresher) {
 
         this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
         this.productAdapter = productAdapter;
-        this.addProductService = addProductService;
+        this.orderRefresher = orderRefresher;
     }
 
     public void execute(AddProductRequest request) throws OrderNotFoundException, ProductNotFoundException {
 
-        OrderId orderId = new OrderId(request.getOrderId());
-        Order order = orderRepository.findIncompleteOrder(orderId);
+        Order order = orderRepository.findIncompleteOrder(new OrderId(request.getOrderId()));
 
         Product product = productAdapter.getProduct(new ProductId(request.getProductId()));
         Quantity quantity = new Quantity(request.getQuantity());
 
-        addProductService.addProduct(order, product, quantity);
+        order.addProduct(orderItemRepository.nextId(), product, quantity);
+        orderRefresher.refreshOrder(order);
         orderRepository.save(order);
     }
 }

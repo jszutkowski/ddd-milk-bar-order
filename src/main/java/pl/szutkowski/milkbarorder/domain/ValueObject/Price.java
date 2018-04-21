@@ -7,6 +7,10 @@ public class Price {
         this.price = price;
     }
 
+    public static Price free() {
+        return new Price(0);
+    }
+
     public float price()
     {
         return price;

@@ -5,15 +5,22 @@ import pl.szutkowski.milkbarorder.domain.promotion.PromotionAdapter;
 
 import java.util.List;
 
-abstract class BaseProductService {
+public class BasketPromotionRefresher {
 
-    protected PromotionAdapter promotionAdapter;
+    private PromotionAdapter promotionAdapter;
 
-    BaseProductService(PromotionAdapter promotionAdapter) {
+    BasketPromotionRefresher(PromotionAdapter promotionAdapter) {
         this.promotionAdapter = promotionAdapter;
     }
 
-    protected void setAvailablePromotions(Order order) {
+    public void refreshPromotions(Order order) {
+        setAvailablePromotions(order);
+        /**
+         * Recalculate promotion if exist
+         */
+    }
+
+    private void setAvailablePromotions(Order order) {
         List<Promotion> promotions = promotionAdapter.getPromotions();
         order.setAvailablePromotions(promotions);
     }

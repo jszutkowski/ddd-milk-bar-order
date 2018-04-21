@@ -6,6 +6,7 @@ import pl.szutkowski.milkbarorder.domain.ValueObject.Price;
 public class Product {
     private ProductId id;
     private String name;
+    private String description;
     private Price price;
     private CategoryId categoryId;
 
@@ -15,6 +16,10 @@ public class Product {
 
     public String name() {
         return name;
+    }
+
+    public String description() {
+        return description;
     }
 
     public Price price() {

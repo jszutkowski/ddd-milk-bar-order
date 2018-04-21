@@ -1,6 +1,7 @@
 package pl.szutkowski.milkbarorder.domain.promotion;
 
 import pl.szutkowski.milkbarorder.domain.Assert;
+import pl.szutkowski.milkbarorder.domain.ValueObject.Price;
 
 public class Discount {
 
@@ -16,5 +17,15 @@ public class Discount {
 
     public int discount() {
         return discount;
+    }
+
+    public Price fromPrice(Price price) {
+
+        float priceValue = price.price();
+        float discountValue = (float)(priceValue * discount / 100.0);
+        float discountPrice = priceValue - discountValue;
+        float rounded = (float) (Math.round(discountPrice * 100.0) / 100.0);
+
+        return new Price(rounded);
     }
 }

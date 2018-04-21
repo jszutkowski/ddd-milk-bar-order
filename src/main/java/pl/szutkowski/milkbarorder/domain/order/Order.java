@@ -18,6 +18,7 @@ public class Order {
     private OrderId id;
     private Price totalPrice;
     private Customer customer;
+    private boolean isConfirmed = false;
     private List<OrderItem> items;
     private List<PromotionId> availablePromotions;
     private PromotionItem promotionItem;
@@ -26,12 +27,13 @@ public class Order {
     public Order(OrderId id,
                  Price totalPrice,
                  Customer customer,
-                 List<OrderItem> items,
+                 boolean isConfirmed, List<OrderItem> items,
                  List<PromotionId> availablePromotions,
                  PromotionItem promotionItem) {
         this.id = id;
         this.totalPrice = totalPrice;
         this.customer = customer;
+        this.isConfirmed = isConfirmed;
         this.items = items;
         this.availablePromotions = availablePromotions;
         this.promotionItem = promotionItem;
@@ -47,6 +49,14 @@ public class Order {
 
     public Customer customer() {
         return customer;
+    }
+
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
+    public void confirm() {
+        isConfirmed = true;
     }
 
     public List<OrderItem> items() {
@@ -135,15 +145,30 @@ public class Order {
         }
     }
 
-    public void assignPromotion(Promotion promotion) throws PromotionNotAvailableException {
+    public void assignProductPromotion(PromotionItemId itemId, Promotion promotion, Product product) throws PromotionNotAvailableException, InvalidPromotionTypeException {
         if (!promotion.isAvailable(this)) {
             throw new PromotionNotAvailableException();
         }
 
-        /**
-         * @TODO:
-         * add promotion
-         */
+        if (!promotion.type().isProductPromotion()) {
+            throw new InvalidPromotionTypeException();
+        }
+
+        promotionItem = new PromotionItem(itemId, promotion.id(), product.id(), Price.free(), product.name(), product.description());
+    }
+
+    public void assignDiscountPromotion(PromotionItemId itemId, Promotion promotion) throws PromotionNotAvailableException, InvalidPromotionTypeException {
+        if (!promotion.isAvailable(this)) {
+            throw new PromotionNotAvailableException();
+        }
+
+        if (!promotion.type().isDiscountPromotion()) {
+            throw new InvalidPromotionTypeException();
+        }
+
+        Price price = promotion.discount().fromPrice(totalPrice);
+
+        promotionItem = new PromotionItem(itemId, promotion.id(), null, price, promotion.name(), promotion.description());
     }
 
     public boolean refreshProducts(List<Product> products) {
@@ -169,12 +194,20 @@ public class Order {
     /**
      * @TODO: remove this method
      */
-    public boolean refreshPromotion(List<Promotion> promotions) {
+    public boolean refreshPromotion(List<Promotion> promotions, List<Product> products) {
         if (promotionItem == null) {
             return false;
         }
 
         Promotion promotion = getPromotionFromList(promotionItem.promotionId(), promotions);
+
+        if (promotion.isDiscountPromotion()) {
+//            assignDiscountPromotion();
+        } else if (promotion.isProductPromotion()) {
+//            assignProductPromotion();
+        }
+
+
 
         if (promotion == null || !promotion.isAvailable(this)) {
             promotionItem = null;
